@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Abby ✨</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#ffedf3; /* soft pink */
+      --bg2:#fff3e6; /* soft peach */
+      --accent:#ff6fb5; /* hot pink */
+      --glass: rgba(255,255,255,0.75);
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial}
+    body{
+      background: radial-gradient(circle at 10% 10%, var(--bg1), var(--bg2));
+      overflow:hidden;
+      display:flex;align-items:center;justify-content:center;padding:32px;
+    }
+    .card{
+      width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
+      border-radius:20px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.12);backdrop-filter: blur(6px);
+      position:relative;z-index:10;overflow:hidden;
+    }
+    .title{
+      font-family:Pacifico, cursive;font-size:56px;margin:0 0 6px;color:var(--accent);text-align:center;
+      text-shadow:0 6px 20px rgba(255,111,181,0.25), 0 0 30px rgba(255,111,181,0.08);
+      filter: drop-shadow(0 6px 12px rgba(255,111,181,0.12));
+      animation: glow 2.8s ease-in-out infinite;
+    }
+    @keyframes glow{
+      0%{text-shadow:0 6px 20px rgba(255,111,181,0.18), 0 0 6px rgba(255,111,181,0.04)}
+      50%{text-shadow:0 18px 50px rgba(255,111,181,0.28), 0 0 30px rgba(255,111,181,0.12)}
+      100%{text-shadow:0 6px 20px rgba(255,111,181,0.18), 0 0 6px rgba(255,111,181,0.04)}
+    }
+    .subtitle{ text-align:center;margin:0;font-weight:600;color:#6b4b6b }
+    .message{margin-top:18px;text-align:center;font-size:18px;color:#5a3a4a}
+    .hearts{position:absolute;inset:0;pointer-events:none;z-index:1}
+
+    /* floating hearts */
+    .heart{position:absolute;left:50%;top:50%;width:28px;height:28px;background:var(--accent);transform:translate(-50%,-50%) rotate(45deg);border-radius:6px 6px 0 0;opacity:0.95}
+    .heart:before,.heart:after{content:'';position:absolute;background:var(--accent);width:28px;height:28px;border-radius:50%}
+    .heart:before{top:-14px;left:0}
+    .heart:after{left:14px;top:0}
+
+    /* many floating hearts via JS */
+
+    .controls{display:flex;gap:12px;justify-content:center;margin-top:20px}
+    .btn{background:linear-gradient(180deg,var(--accent),#ff3b92);color:white;padding:12px 18px;border-radius:12px;border:0;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(255,111,181,0.18)}
+    .btn.secondary{background:transparent;color:var(--accent);box-shadow:none;border:2px solid rgba(255,111,181,0.12)}
+
+    .footer{margin-top:20px;text-align:center;color:#7a556c;font-size:14px}
+
+    /* confetti ribbons */
+    .confetti-piece{position:absolute;width:8px;height:16px;opacity:0.95;transform-origin:center;}
+
+    /* responsive */
+    @media (max-width:640px){.title{font-size:38px}.card{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts-root" aria-hidden="true"></div>
+
+  <main class="card" role="main">
+    <h1 class="title">Happy Birthday, Stephanie 🎉</h1>
+    <p class="subtitle">Wishing you a day full of sparkle, cake and unforgettable smiles ✨</p>
+    <p class="message">May your year be as bright and colorful as this page. Enjoy every bite of cake and every laugh with loved ones.</p>
+
+    <div class="controls">
+      <button class="btn" id="playBtn">Play Birthday Tune</button>
+      <button class="btn secondary" id="stopBtn">Stop</button>
+    </div>
+
+    <div class="footer">Tip: To change the name or music, edit <code>index.html</code> in your repo (see instructions).</div>
+  </main>
+
+  <!-- audio: place your audio file in the same folder and name it `birthday.mp3` OR change the src -->
+  <audio id="bgAudio" loop preload="auto" src="birthday.mp3"></audio>
+
+  <script>
+    // small helper to create floating hearts
+    const heartsRoot = document.getElementById('hearts-root');
+    const rand = (min,max)=> Math.random()*(max-min)+min;
+
+    function spawnHeart(){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      const size = rand(18,46);
+      h.style.width = size+'px'; h.style.height = size+'px';
+      h.style.left = rand(5,95)+'%';
+      h.style.top = '110%';
+      h.style.opacity = rand(0.6,1);
+      h.style.transform = `translate(-50%,-50%) rotate(${rand(-25,25)}deg)`;
+      heartsRoot.appendChild(h);
+
+      const duration = rand(6500,14000);
+      const endX = rand(-20,20);
+      h.animate([
+        { transform: `translate(-50%,-50%) translateY(0) scale(0.9) rotate(${rand(-60,60)}deg)`, opacity: h.style.opacity },
+        { transform: `translate(${endX}px,-900px) scale(1.05) rotate(${rand(120,420)}deg)`, opacity: 0 }
+      ], {duration, easing:'cubic-bezier(.16,.8,.24,1)'});
+
+      setTimeout(()=>{ h.remove(); }, duration+50);
+    }
+
+    // spawn bursts
+    setInterval(()=>{ if(Math.random()<0.7) spawnHeart(); }, 420);
+
+    // confetti pieces
+    function spawnConfetti(){
+      const piece = document.createElement('div');
+      piece.className='confetti-piece';
+      piece.style.left = Math.random()*100+'%';
+      piece.style.top = '-10vh';
+      piece.style.background = `hsl(${Math.random()*360} 80% 60%)`;
+      piece.style.width = Math.floor(Math.random()*10)+6+'px';
+      piece.style.height = Math.floor(Math.random()*14)+8+'px';
+      document.body.appendChild(piece);
+      const dur = rand(2200,4200);
+      piece.animate([
+        { transform: 'translateY(0) rotate(0) ', opacity:1 },
+        { transform: `translateY(${window.innerHeight+200}px) rotate(${rand(200,900)}deg)`, opacity:0.3 }
+      ], {duration:dur, easing:'linear'});
+      setTimeout(()=>piece.remove(), dur+50);
+    }
+    // occasional confetti
+    setInterval(()=>{ if(Math.random()<0.12) spawnConfetti(); }, 350);
+
+    // audio controls and autoplay behavior
+    const audio = document.getElementById('bgAudio');
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    playBtn.addEventListener('click', async ()=>{
+      try{
+        await audio.play();
+      }catch(e){
+        // autoplay blocked on some browsers; this click should allow playback.
+        console.warn('audio play failed', e);
+      }
+    });
+    stopBtn.addEventListener('click', ()=>{ audio.pause(); audio.currentTime=0; });
+
+    // try gentle autoplay if browser allows (muted). Many browsers block autoplay with sound.
+    (async function tryAutoplay(){
+      try{
+        audio.muted = true;
+        await audio.play();
+        // if playing muted, unmute after a short time so user hears it (only works if browser allows)
+        setTimeout(()=>{ audio.muted = false; }, 700);
+      }catch(e){
+        // ignore — user can press Play
+      } finally{ audio.muted=false; }
+    })();
+
+    // small accessibility: allow keyboard space to toggle
+    document.addEventListener('keydown', e=>{
+      if(e.code==='Space'){ e.preventDefault(); if(audio.paused) audio.play(); else audio.pause(); }
+    });
+
+    // personalization helper: replace the name on page easily
+    // open console and run: document.querySelector('.title').textContent = 'Happy Birthday, Alex 🎉'
+  </script>
+</body>
+</html>
+  
